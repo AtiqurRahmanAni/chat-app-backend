@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  chat_app:
+    container_name: chat_app_container
+    build:
+      context: .
+    restart: always
+    environment:
+      - DEBUG=${DEBUG}
+      - DOCKER=${DOCKER}
+      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
+    command: "daphne -b 0.0.0.0 -p 8000 demochat.asgi:application"
+    # command: "python manage.py runserver 0.0.0.0:8000"
+
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  redis:
+    container_name: chat_app_redis
+    image: redis:7.0-alpine
+    restart: always
+    command: --port 6381
+    ports:
+      - "6381:6381"
+    volumes:
+      - cache:/data
+
+volumes:
+  cache:
+    driver: local
