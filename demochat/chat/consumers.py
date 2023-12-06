@@ -22,31 +22,32 @@ class ChatConsumer(WebsocketConsumer):
             self.room_group_name, self.channel_name
         )
 
-    # Receive message from WebSocket
-    def receive(self, text_data):
-        text_data_json = json.loads(text_data)
+    # # Receive message from WebSocket
+    # def receive(self, text_data):
+    #     text_data_json = json.loads(text_data)
 
-        message = text_data_json["message"]
-        message_type = text_data_json["message_type"]
-        message_owner = text_data_json["from"]
+    #     message = text_data_json["message"]
+    #     message_type = text_data_json["message_type"]
+    #     message_owner = text_data_json["from"]
 
-        # print(message, message_type, message_owner, self.room_name)
-        msgObj = Message(user_id=message_owner, thread_id=self.room_name,
-                         content=message, content_type=message_type)
-        msgObj.save()
+    #     # print(message, message_type, message_owner, self.room_name)
+    #     msgObj = Message(user_id=message_owner, thread_id=self.room_name,
+    #                      content=message, content_type=message_type)
+    #     msgObj.save()
 
-        # Send message to room group
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name, {"type": "chat.message",
-                                   "message": message, "message_type": message_type, "message_owner": message_owner},
-        )
+    #     # Send message to room group
+    #     async_to_sync(self.channel_layer.group_send)(
+    #         self.room_group_name, {"type": "chat.message",
+    #                                "message": message, "message_type": message_type, "message_owner": message_owner},
+    #     )
 
     # Receive message from room group
     def chat_message(self, event):
         message = event["message"]
         message_type = event["message_type"]
         message_owner = event["message_owner"]
+        upload = event["upload"]
 
         # Send message to WebSocket
         self.send(text_data=json.dumps(
-            {"message": message, "message_type": message_type, "message_owner": message_owner}))
+            {"message": message, "message_type": message_type, "message_owner": message_owner, "upload": upload}))

@@ -23,7 +23,7 @@ class UserThreadSerializer(ModelSerializer):
         return obj.last_message_user.email if obj.last_message_user else None
 
     def get_last_message_content(self, obj):
-        return obj.last_message.content if obj.last_message.content else None
+        return obj.last_message.content if obj.last_message else None
 
     def get_participants_emails(self, obj):
         return [participant.email for participant in obj.participants.all()] if obj.participants.exists() else []

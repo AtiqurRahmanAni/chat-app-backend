@@ -1,5 +1,12 @@
 from django.db import models
 from authentication.models import User
+from uuid import uuid4
+import os
+
+
+def message_file_path(instance, filename):
+    _, ext = os.path.splitext(filename)
+    return f"message_files/{uuid4().hex + ext}"
 
 
 class UserThread(models.Model):
@@ -21,6 +28,7 @@ class Message(models.Model):
     content = models.TextField(blank=True, null=True)
     content_type = models.CharField(
         max_length=20, choices=ContentTypes.choices, default=ContentTypes.TEXT)
+    upload = models.FileField(upload_to=message_file_path, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
